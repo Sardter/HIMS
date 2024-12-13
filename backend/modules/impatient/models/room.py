@@ -1,6 +1,4 @@
-from sqlmodel import Field, Relationship, SQLModel
-
-from modules.impatient.models.admission import Admission
+from sqlmodel import Field, SQLModel
 
 class RoomBase(SQLModel):
     name: str = Field(index=True)
@@ -9,13 +7,7 @@ class RoomBase(SQLModel):
 
 class Room(RoomBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    
-    admissions: list[Admission] = Relationship(back_populates="room")
-    
-    @staticmethod
-    def foreign_key_descriptor() -> str:
-        return "room.id"
-    
+
 
 class RoomCreate(RoomBase):
     ...

@@ -1,7 +1,6 @@
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 from enum import Enum
 
-from modules.impatient.models.admission import Admission
 
 class PatientStatus(Enum):
     Registered = 1
@@ -20,12 +19,6 @@ class PatientBase(SQLModel):
 
 class Patient(PatientBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    
-    admissions: list[Admission] = Relationship(back_populates="patient")
-    
-    @staticmethod
-    def foreign_key_descriptor() -> str:
-        return "patient.id"
     
 
 class PatientCreate(PatientBase):
