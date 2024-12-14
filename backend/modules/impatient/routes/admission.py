@@ -4,9 +4,10 @@ from sqlalchemy.exc import IntegrityError
 
 from modules.auth.controllers.staff import get_current_staff
 from modules.auth.models.staff import Staff
-from modules.impatient.controllers.admission import get_admission_all, get_admission_by_id, create_admission, update_admission, delete_admission
-from modules.impatient.models.admission import Admission, AdmissionCreate, AdmissionUpdate, AdmissionPublic
+from modules.impatient.controllers.admission import get_admission_all, get_admission_by_id, create_admission, update_admission, delete_admission, get_admission_notes
+from modules.impatient.models.admission import AdmissionCreate, AdmissionUpdate, AdmissionPublic
 from modules.database.session import SessionDep
+from modules.impatient.models.note import NotePublic
 
 router = APIRouter()
 
@@ -28,6 +29,23 @@ def list_admissions(
         offset=offset,
         limit=limit,
     )
+
+
+@router.get("/{id}/notes/", response_model=list[NotePublic])
+def list_admission_notes(
+    session: SessionDep,
+    id: int,
+    offset: int = 0,
+    limit: int = 10,
+    current_staff: Staff = Depends(get_current_staff),
+):
+    return get_admission_notes(
+        id=id,
+        session=session,
+        offset=offset,
+        limit=limit
+    )
+
 
 
 @router.get("/{id}/", response_model=AdmissionPublic)
@@ -60,7 +78,7 @@ def create_admission(
 @router.put("/{id}/", response_model=AdmissionPublic)
 def update(
     id: int,
-    patient_update: AdmissionPublic,
+    patient_update: AdmissionUpdate,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):

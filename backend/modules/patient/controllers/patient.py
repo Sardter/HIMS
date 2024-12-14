@@ -2,6 +2,7 @@ from sqlmodel import select
 
 from modules.patient.models.patient import Patient, PatientCreate, PatientUpdate, PatientStatus
 from modules.database.session import SessionDep
+from modules.impatient.models.admission import Admission
 
 
 def get_patient_all(
@@ -44,6 +45,20 @@ def create_patient( *, staff: PatientCreate, session: SessionDep) -> Patient | N
     session.commit()
     session.refresh(db_staff)
     return db_staff
+
+
+def get_patient_admissions(
+        *, id: int, 
+        session: SessionDep,
+        offset: int | None = None,
+        limit: int | None = None) -> list[Admission] | None:
+    
+    db_staff = session.get(Patient, id)
+    if not db_staff:
+        return None
+    query = select(Admission).where(Admission.patient_id == db_staff.id).offset(offset).limit(limit)
+
+    return session.exec(query).all()
 
 
 def update_patient(*, id: int, staff: PatientUpdate, session: SessionDep) -> Patient | None:

@@ -4,6 +4,9 @@ from sqlmodel import select
 
 from modules.auth.models.staff import Staff, StaffCreate, StaffUpdate, StaffLogin
 from modules.database.session import SessionDep
+from modules.auth.models.log import Log
+from modules.impatient.models.admission import Admission
+from modules.impatient.models.note import Note
 
 from passlib.hash import pbkdf2_sha256
 from fastapi.security import OAuth2PasswordBearer
@@ -65,6 +68,48 @@ def register_staff( *, staff: StaffCreate, session: SessionDep) -> Staff | None:
     session.commit()
     session.refresh(db_staff)
     return db_staff
+
+
+def get_staff_logs(
+        *, id: int, 
+        session: SessionDep,
+        offset: int | None = None,
+        limit: int | None = None) -> list[Log] | None:
+    
+    db_staff = session.get(Staff, id)
+    if not db_staff:
+        return None
+    query = select(Log).where(Log.staff_id == db_staff.id).offset(offset).limit(limit)
+
+    return session.exec(query).all()
+
+
+def get_staff_admissions(
+        *, id: int, 
+        session: SessionDep,
+        offset: int | None = None,
+        limit: int | None = None) -> list[Admission] | None:
+    
+    db_staff = session.get(Staff, id)
+    if not db_staff:
+        return None
+    query = select(Admission).where(Admission.staff_id == db_staff.id).offset(offset).limit(limit)
+
+    return session.exec(query).all()
+
+
+def get_staff_notes(
+        *, id: int, 
+        session: SessionDep,
+        offset: int | None = None,
+        limit: int | None = None) -> list[Admission] | None:
+    
+    db_staff = session.get(Note, id)
+    if not db_staff:
+        return None
+    query = select(Note).where(Note.staff_id == db_staff.id).offset(offset).limit(limit)
+
+    return session.exec(query).all()
 
 
 def update_staff(*, id: int, staff: StaffUpdate, session: SessionDep) -> Staff | None:

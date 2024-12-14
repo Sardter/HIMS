@@ -2,6 +2,7 @@ from sqlmodel import select
 
 from modules.impatient.models.room import Room, RoomCreate, RoomUpdate
 from modules.database.session import SessionDep
+from modules.impatient.models.admission import Admission
 
 
 def get_room_all(
@@ -36,6 +37,20 @@ def get_room_all(
 
 def get_room_by_id( *, session: SessionDep, id: int) -> Room | None:
     return session.get(Room, id)
+
+
+def get_room_admissions(
+        *, id: int, 
+        session: SessionDep,
+        offset: int | None = None,
+        limit: int | None = None) -> list[Admission] | None:
+    
+    db_staff = session.get(Room, id)
+    if not db_staff:
+        return None
+    query = select(Admission).where(Admission.room_id == db_staff.id).offset(offset).limit(limit)
+
+    return session.exec(query).all()
 
 
 def create_room( *, staff: RoomCreate, session: SessionDep) -> Room | None:

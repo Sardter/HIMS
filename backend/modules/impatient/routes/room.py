@@ -4,9 +4,10 @@ from sqlalchemy.exc import IntegrityError
 
 from modules.auth.controllers.staff import get_current_staff
 from modules.auth.models.staff import Staff
-from modules.impatient.controllers.room import get_room_all, get_room_by_id, create_room, update_room, delete_room
+from modules.impatient.controllers.room import get_room_all, get_room_by_id, create_room, update_room, delete_room, get_room_admissions
 from modules.impatient.models.room import Room, RoomCreate, RoomUpdate, RoomPublic
 from modules.database.session import SessionDep
+from modules.impatient.models.admission import AdmissionPublic
 
 router = APIRouter()
 
@@ -34,6 +35,23 @@ def list_rooms(
         offset=offset,
         limit=limit,
     )
+
+
+@router.get("/{id}/admissions/", response_model=list[AdmissionPublic])
+def list_room_admissions(
+    session: SessionDep,
+    id: int,
+    offset: int = 0,
+    limit: int = 10,
+    current_staff: Staff = Depends(get_current_staff),
+):
+    return get_room_admissions(
+        id=id,
+        session=session,
+        offset=offset,
+        limit=limit
+    )
+
 
 
 @router.get("/{id}/", response_model=RoomPublic)

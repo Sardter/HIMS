@@ -5,9 +5,11 @@ from sqlalchemy.exc import IntegrityError
 
 from modules.auth.controllers.staff import get_current_staff
 from modules.auth.models.staff import Staff
-from modules.patient.controllers.patient import get_patient_all, get_patient_by_id, create_patient, update_patient, delete_patient
-from modules.patient.models.patient import Patient, PatientCreate, PatientUpdate, PatientPublic, PatientStatus
+from modules.patient.controllers.patient import get_patient_all, get_patient_by_id, create_patient, update_patient, delete_patient, get_patient_admissions
+from modules.patient.models.patient import PatientCreate, PatientUpdate, PatientPublic, PatientStatus
 from modules.database.session import SessionDep
+
+from modules.impatient.models.admission import AdmissionPublic
 
 router = APIRouter()
 
@@ -32,6 +34,22 @@ def list_patients(
         phone=phone,
         offset=offset,
         limit=limit,
+    )
+
+
+@router.get("/{id}/admissions/", response_model=list[AdmissionPublic])
+def list_patients(
+    session: SessionDep,
+    id: int,
+    offset: int = 0,
+    limit: int = 10,
+    current_staff: Staff = Depends(get_current_staff),
+):
+    return get_patient_admissions(
+        id=id,
+        session=session,
+        offset=offset,
+        limit=limit
     )
 
 

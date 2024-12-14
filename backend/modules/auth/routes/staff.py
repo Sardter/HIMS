@@ -5,9 +5,12 @@ from sqlalchemy.exc import IntegrityError
 from fastapi.responses import JSONResponse
 
 
-from modules.auth.controllers.staff import get_staff_all, get_staff_by_id, register_staff, login_staff, update_staff, delete_staff, get_current_staff
+from modules.auth.controllers.staff import get_staff_all, get_staff_by_id, register_staff, login_staff, update_staff, delete_staff, get_current_staff, get_staff_admissions, get_staff_logs, get_staff_notes
 from modules.auth.models.staff import Staff, StaffCreate, StaffUpdate, StaffLogin, StaffPublic
 from modules.database.session import SessionDep
+from modules.impatient.models.admission import AdmissionPublic
+from modules.impatient.models.note import NotePublic
+from modules.auth.models.log import LogPublic
 
 router = APIRouter()
 
@@ -32,6 +35,54 @@ def list_staff(
         phone=phone,
         offset=offset,
         limit=limit,
+    )
+
+
+@router.get("/{id}/admissions/", response_model=list[AdmissionPublic])
+def list_staff_admissions(
+    session: SessionDep,
+    id: int,
+    offset: int = 0,
+    limit: int = 10,
+    current_staff: Staff = Depends(get_current_staff),
+):
+    return get_staff_admissions(
+        id=id,
+        session=session,
+        offset=offset,
+        limit=limit
+    )
+
+
+@router.get("/{id}/notes/", response_model=list[NotePublic])
+def list_staff_notes(
+    session: SessionDep,
+    id: int,
+    offset: int = 0,
+    limit: int = 10,
+    current_staff: Staff = Depends(get_current_staff),
+):
+    return get_staff_notes(
+        id=id,
+        session=session,
+        offset=offset,
+        limit=limit
+    )
+
+
+@router.get("/{id}/logs/", response_model=list[LogPublic])
+def list_staff_logs(
+    session: SessionDep,
+    id: int,
+    offset: int = 0,
+    limit: int = 10,
+    current_staff: Staff = Depends(get_current_staff),
+):
+    return get_staff_logs(
+        id=id,
+        session=session,
+        offset=offset,
+        limit=limit
     )
 
 

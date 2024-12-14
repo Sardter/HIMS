@@ -2,7 +2,7 @@ from sqlmodel import select
 
 from modules.impatient.models.admission import Admission, AdmissionCreate, AdmissionUpdate
 from modules.database.session import SessionDep
-
+from modules.impatient.models.note import Note
 
 def get_admission_all(
         *,
@@ -38,6 +38,20 @@ def create_admission( *, staff: AdmissionCreate, session: SessionDep) -> Admissi
     session.commit()
     session.refresh(db_staff)
     return db_staff
+
+
+def get_admission_notes(
+        *, id: int, 
+        session: SessionDep,
+        offset: int | None = None,
+        limit: int | None = None) -> list[Note] | None:
+    
+    db_staff = session.get(Admission, id)
+    if not db_staff:
+        return None
+    query = select(Note).where(Note.admission_id == db_staff.id).offset(offset).limit(limit)
+
+    return session.exec(query).all()
 
 
 def update_admission(*, id: int, staff: AdmissionUpdate, session: SessionDep) -> Admission | None:
