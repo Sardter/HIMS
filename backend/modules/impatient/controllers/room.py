@@ -1,4 +1,5 @@
 from sqlmodel import select
+from datetime import datetime
 
 from modules.impatient.models.room import Room, RoomCreate, RoomUpdate
 from modules.database.session import SessionDep
@@ -14,6 +15,16 @@ def get_room_all(
         maximum_capacity__lt: int | None = None,
         maximum_capacity__gte: int | None = None,
         maximum_capacity__lte: int | None = None,
+        created_datetime: datetime | None = None,
+        created_datetime__gt: datetime | None = None,
+        created_datetime__lt: datetime | None = None,
+        created_datetime__gte: datetime | None = None,
+        created_datetime__lte: datetime | None = None,
+        updated_datetime: datetime | None = None,
+        updated_datetime__gt: datetime | None = None,
+        updated_datetime__lt: datetime | None = None,
+        updated_datetime__gte: datetime | None = None,
+        updated_datetime__lte: datetime | None = None,
         offset: int | None = None,
         limit: int | None = None,
     ) -> list[Room]:
@@ -25,6 +36,16 @@ def get_room_all(
         Room.maximum_capacity < maximum_capacity__lt if maximum_capacity__lt is not None else None,
         Room.maximum_capacity >= maximum_capacity__gte if maximum_capacity__gte is not None else None,
         Room.maximum_capacity <= maximum_capacity__lte if maximum_capacity__lte is not None else None,
+        Room.created_datetime == created_datetime if created_datetime is not None else None,
+        Room.created_datetime > created_datetime__gt if created_datetime__gt is not None else None,
+        Room.created_datetime < created_datetime__lt if created_datetime__lt is not None else None,
+        Room.created_datetime >= created_datetime__gte if created_datetime__gte is not None else None,
+        Room.created_datetime <= created_datetime__lte if created_datetime__lte is not None else None,
+        Room.updated_datetime == updated_datetime if updated_datetime is not None else None,
+        Room.updated_datetime > updated_datetime__gt if updated_datetime__gt is not None else None,
+        Room.updated_datetime < updated_datetime__lt if updated_datetime__lt is not None else None,
+        Room.updated_datetime >= updated_datetime__gte if updated_datetime__gte is not None else None,
+        Room.updated_datetime <= updated_datetime__lte if updated_datetime__lte is not None else None,
     ]
     
     filters = [filter for filter in filters if filter is not None]

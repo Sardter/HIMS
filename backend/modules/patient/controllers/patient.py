@@ -1,4 +1,5 @@
 from sqlmodel import select
+from datetime import datetime
 
 from modules.patient.models.patient import Patient, PatientCreate, PatientUpdate, PatientStatus
 from modules.database.session import SessionDep
@@ -14,6 +15,16 @@ def get_patient_all(
         gender: str | None = None,
         phone: str | None = None,
         status: PatientStatus | None = None,
+        created_datetime: datetime | None = None,
+        created_datetime__gt: datetime | None = None,
+        created_datetime__lt: datetime | None = None,
+        created_datetime__gte: datetime | None = None,
+        created_datetime__lte: datetime | None = None,
+        updated_datetime: datetime | None = None,
+        updated_datetime__gt: datetime | None = None,
+        updated_datetime__lt: datetime | None = None,
+        updated_datetime__gte: datetime | None = None,
+        updated_datetime__lte: datetime | None = None,
         offset: int | None = None,
         limit: int | None = None,
     ) -> list[Patient]:
@@ -24,7 +35,17 @@ def get_patient_all(
         Patient.email.ilike(f"%{email}%") if email is not None else None,
         Patient.gender.ilike(f"%{gender}%") if gender is not None else None,
         Patient.phone.ilike(f"%{phone}%") if phone is not None else None,
-        Patient.status == status if status is not None else None
+        Patient.status == status if status is not None else None,
+        Patient.created_datetime == created_datetime if created_datetime is not None else None,
+        Patient.created_datetime > created_datetime__gt if created_datetime__gt is not None else None,
+        Patient.created_datetime < created_datetime__lt if created_datetime__lt is not None else None,
+        Patient.created_datetime >= created_datetime__gte if created_datetime__gte is not None else None,
+        Patient.created_datetime <= created_datetime__lte if created_datetime__lte is not None else None,
+        Patient.updated_datetime == updated_datetime if updated_datetime is not None else None,
+        Patient.updated_datetime > updated_datetime__gt if updated_datetime__gt is not None else None,
+        Patient.updated_datetime < updated_datetime__lt if updated_datetime__lt is not None else None,
+        Patient.updated_datetime >= updated_datetime__gte if updated_datetime__gte is not None else None,
+        Patient.updated_datetime <= updated_datetime__lte if updated_datetime__lte is not None else None,
     ]
     
     filters = [filter for filter in filters if filter is not None]

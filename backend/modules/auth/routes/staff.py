@@ -1,4 +1,5 @@
 from typing import Annotated
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
@@ -24,6 +25,16 @@ def list_staff(
     phone: str | None = None,
     offset: int = 0,
     limit: int = 10,
+    created_datetime: datetime | None = None,
+    created_datetime__gt: datetime | None = None,
+    created_datetime__lt: datetime | None = None,
+    created_datetime__gte: datetime | None = None,
+    created_datetime__lte: datetime | None = None,
+    updated_datetime: datetime | None = None,
+    updated_datetime__gt: datetime | None = None,
+    updated_datetime__lt: datetime | None = None,
+    updated_datetime__gte: datetime | None = None,
+    updated_datetime__lte: datetime | None = None,
     current_staff: Staff = Depends(get_current_staff),
 ):
     return get_staff_all(
@@ -35,6 +46,16 @@ def list_staff(
         phone=phone,
         offset=offset,
         limit=limit,
+        created_datetime=created_datetime,
+        created_datetime__gt=created_datetime__gt,
+        created_datetime__lt=created_datetime__lt,
+        created_datetime__gte=created_datetime__gte,
+        created_datetime__lte=created_datetime__lte,
+        updated_datetime=updated_datetime,
+        updated_datetime__gt=updated_datetime__gt,
+        updated_datetime__lt=updated_datetime__lt,
+        updated_datetime__gte=updated_datetime__gte,
+        updated_datetime__lte=updated_datetime__lte,
     )
 
 

@@ -1,4 +1,5 @@
 from sqlmodel import select
+from datetime import datetime
 
 from modules.impatient.models.admission import Admission, AdmissionCreate, AdmissionUpdate
 from modules.database.session import SessionDep
@@ -12,12 +13,32 @@ def get_admission_all(
         staff_id: int | None = None,
         offset: int | None = None,
         limit: int | None = None,
+        created_datetime: datetime | None = None,
+        created_datetime__gt: datetime | None = None,
+        created_datetime__lt: datetime | None = None,
+        created_datetime__gte: datetime | None = None,
+        created_datetime__lte: datetime | None = None,
+        updated_datetime: datetime | None = None,
+        updated_datetime__gt: datetime | None = None,
+        updated_datetime__lt: datetime | None = None,
+        updated_datetime__gte: datetime | None = None,
+        updated_datetime__lte: datetime | None = None,
     ) -> list[Admission]:
     query = select(Admission).offset(offset).limit(limit)
     filters = [
         Admission.patient_id == patient_id if patient_id is not None else None,
         Admission.room_id == room_id if room_id is not None else None,
         Admission.staff_id == staff_id if staff_id is not None else None,
+        Admission.created_datetime == created_datetime if created_datetime is not None else None,
+        Admission.created_datetime > created_datetime__gt if created_datetime__gt is not None else None,
+        Admission.created_datetime < created_datetime__lt if created_datetime__lt is not None else None,
+        Admission.created_datetime >= created_datetime__gte if created_datetime__gte is not None else None,
+        Admission.created_datetime <= created_datetime__lte if created_datetime__lte is not None else None,
+        Admission.updated_datetime == updated_datetime if updated_datetime is not None else None,
+        Admission.updated_datetime > updated_datetime__gt if updated_datetime__gt is not None else None,
+        Admission.updated_datetime < updated_datetime__lt if updated_datetime__lt is not None else None,
+        Admission.updated_datetime >= updated_datetime__gte if updated_datetime__gte is not None else None,
+        Admission.updated_datetime <= updated_datetime__lte if updated_datetime__lte is not None else None,
     ]
     
     filters = [filter for filter in filters if filter is not None]

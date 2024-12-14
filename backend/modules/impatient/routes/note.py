@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
-
+from datetime import datetime
 
 from modules.auth.controllers.staff import get_current_staff
 from modules.auth.models.staff import Staff
@@ -16,6 +16,16 @@ def list_notes(
     text: str | None = None,
     admission_id: int | None = None,
     staff_id: int | None = None,
+    created_datetime: datetime | None = None,
+    created_datetime__gt: datetime | None = None,
+    created_datetime__lt: datetime | None = None,
+    created_datetime__gte: datetime | None = None,
+    created_datetime__lte: datetime | None = None,
+    updated_datetime: datetime | None = None,
+    updated_datetime__gt: datetime | None = None,
+    updated_datetime__lt: datetime | None = None,
+    updated_datetime__gte: datetime | None = None,
+    updated_datetime__lte: datetime | None = None,
     offset: int = 0,
     limit: int = 10,
     current_staff: Staff = Depends(get_current_staff),
@@ -27,6 +37,16 @@ def list_notes(
         staff_id=staff_id,
         offset=offset,
         limit=limit,
+        created_datetime=created_datetime,
+        created_datetime__gt=created_datetime__gt,
+        created_datetime__lt=created_datetime__lt,
+        created_datetime__gte=created_datetime__gte,
+        created_datetime__lte=created_datetime__lte,
+        updated_datetime=updated_datetime,
+        updated_datetime__gt=updated_datetime__gt,
+        updated_datetime__lt=updated_datetime__lt,
+        updated_datetime__gte=updated_datetime__gte,
+        updated_datetime__lte=updated_datetime__lte,
     )
 
 
