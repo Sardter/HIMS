@@ -1,5 +1,3 @@
-from typing import Union
-
 from fastapi import FastAPI
 
 from modules.database.engine import create_db_and_tables
