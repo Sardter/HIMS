@@ -53,12 +53,12 @@ def get_admission_by_id( *, session: SessionDep, id: int) -> Admission | None:
     return session.get(Admission, id)
 
 
-def create_admission( *, staff: AdmissionCreate, session: SessionDep) -> Admission | None:
-    db_staff = Admission.model_validate(staff)
-    session.add(db_staff)
+def create_admission( *, admission: AdmissionCreate, session: SessionDep) -> Admission | None:
+    db_admission = Admission.model_validate(admission)
+    session.add(db_admission)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_admission)
+    return db_admission
 
 
 def get_admission_notes(
@@ -67,30 +67,30 @@ def get_admission_notes(
         offset: int | None = None,
         limit: int | None = None) -> list[Note] | None:
     
-    db_staff = session.get(Admission, id)
-    if not db_staff:
+    db_admission = session.get(Admission, id)
+    if not db_admission:
         return None
-    query = select(Note).where(Note.admission_id == db_staff.id).offset(offset).limit(limit)
+    query = select(Note).where(Note.admission_id == db_admission.id).offset(offset).limit(limit)
 
     return session.exec(query).all()
 
 
-def update_admission(*, id: int, staff: AdmissionUpdate, session: SessionDep) -> Admission | None:
-    db_staff = session.get(Admission, id)
-    if not db_staff:
+def update_admission(*, id: int, admission: AdmissionUpdate, session: SessionDep) -> Admission | None:
+    db_admission = session.get(Admission, id)
+    if not db_admission:
         return None
-    staff_data = staff.model_dump(exclude_unset=True)
-    db_staff.sqlmodel_update(staff_data)
-    session.add(db_staff)
+    staff_data = admission.model_dump(exclude_unset=True)
+    db_admission.sqlmodel_update(staff_data)
+    session.add(db_admission)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_admission)
+    return db_admission
 
 
 def delete_admission(*, id: int, session: SessionDep) -> bool:
-    db_staff = session.get(Admission, id)
-    if db_staff is None:
+    db_admission = session.get(Admission, id)
+    if db_admission is None:
         return False
-    session.delete(db_staff)
+    session.delete(db_admission)
     session.commit()
     return True

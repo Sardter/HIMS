@@ -56,10 +56,10 @@ def retrieve_room(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    patient = get_note_by_id(session=session, id=id)
-    if not patient:
-        raise HTTPException(status_code=404, detail="Staff not found")
-    return patient
+    note = get_note_by_id(session=session, id=id)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return note
 
 
 @router.post("/", response_model=NotePublic)
@@ -68,26 +68,21 @@ def register_room(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    try:
-        patient = create_note(staff=patient_create, session=session)
-        return patient
-    except IntegrityError:
-        raise HTTPException(
-            status_code=400, detail="A patient with the provided details already exists"
-        )
+    note = create_note(note=patient_create, session=session)
+    return note
 
 
 @router.put("/{id}/", response_model=NotePublic)
 def update(
     id: int,
-    patient_update: NoteUpdate,
+    note_update: NoteUpdate,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    staff = update_note(staff=patient_update, id=id, session=session)
-    if not staff:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return staff
+    note = update_note(note=note_update, id=id, session=session)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return note
 
 
 @router.delete("/{id}/", response_model=dict)
@@ -98,5 +93,5 @@ def delete(
 ):
     success = delete_note(id=id, session=session)
     if not success:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return {"detail": "Patient deleted successfully"}
+        raise HTTPException(status_code=404, detail="Note not found")
+    return {"detail": "Note deleted successfully"}

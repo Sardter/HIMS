@@ -5,7 +5,7 @@ from datetime import datetime
 from modules.auth.controllers.staff import get_current_staff
 from modules.auth.models.staff import Staff
 from modules.impatient.controllers.room import get_room_all, get_room_by_id, create_room, update_room, delete_room, get_room_admissions
-from modules.impatient.models.room import Room, RoomCreate, RoomUpdate, RoomPublic
+from modules.impatient.models.room import RoomCreate, RoomUpdate, RoomPublic
 from modules.database.session import SessionDep
 from modules.impatient.models.admission import AdmissionPublic
 
@@ -80,10 +80,10 @@ def retrieve_room(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    patient = get_room_by_id(session=session, id=id)
-    if not patient:
+    room = get_room_by_id(session=session, id=id)
+    if not room:
         raise HTTPException(status_code=404, detail="Staff not found")
-    return patient
+    return room
 
 
 @router.post("/", response_model=RoomPublic)
@@ -93,25 +93,25 @@ def register_room(
     current_staff: Staff = Depends(get_current_staff),
 ):
     try:
-        patient = create_room(staff=patient_create, session=session)
-        return patient
+        room = create_room(room=patient_create, session=session)
+        return room
     except IntegrityError:
         raise HTTPException(
-            status_code=400, detail="A patient with the provided details already exists"
+            status_code=400, detail="A room with the provided details already exists"
         )
 
 
 @router.put("/{id}/", response_model=RoomPublic)
 def update(
     id: int,
-    patient_update: RoomUpdate,
+    room_update: RoomUpdate,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    staff = update_room(staff=patient_update, id=id, session=session)
-    if not staff:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return staff
+    room = update_room(staff=room_update, id=id, session=session)
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    return room
 
 
 @router.delete("/{id}/", response_model=dict)
@@ -122,5 +122,5 @@ def delete(
 ):
     success = delete_room(id=id, session=session)
     if not success:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return {"detail": "Patient deleted successfully"}
+        raise HTTPException(status_code=404, detail="Room not found")
+    return {"detail": "Room deleted successfully"}

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
 from modules.auth.controllers.staff import get_current_staff
@@ -74,10 +73,10 @@ def retrieve_admission(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    patient = get_admission_by_id(session=session, id=id)
-    if not patient:
-        raise HTTPException(status_code=404, detail="Staff not found")
-    return patient
+    admission = get_admission_by_id(session=session, id=id)
+    if not admission:
+        raise HTTPException(status_code=404, detail="Admission not found")
+    return admission
 
 
 @router.post("/", response_model=AdmissionPublic)
@@ -86,26 +85,21 @@ def create_admission(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    try:
-        patient = create_admission(staff=patient_create, session=session)
-        return patient
-    except IntegrityError:
-        raise HTTPException(
-            status_code=400, detail="A patient with the provided details already exists"
-        )
+    admission = create_admission(staff=patient_create, session=session)
+    return admission
 
 
 @router.put("/{id}/", response_model=AdmissionPublic)
 def update(
     id: int,
-    patient_update: AdmissionUpdate,
+    admission_update: AdmissionUpdate,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    staff = update_admission(staff=patient_update, id=id, session=session)
-    if not staff:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return staff
+    admission = update_admission(admission=admission_update, id=id, session=session)
+    if not admission:
+        raise HTTPException(status_code=404, detail="Admission not found")
+    return admission
 
 
 @router.delete("/{id}/", response_model=dict)
@@ -116,5 +110,5 @@ def delete(
 ):
     success = delete_admission(id=id, session=session)
     if not success:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return {"detail": "Patient deleted successfully"}
+        raise HTTPException(status_code=404, detail="Admission not found")
+    return {"detail": "Admission deleted successfully"}

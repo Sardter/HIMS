@@ -95,7 +95,7 @@ def register_patient(
     current_staff: Staff = Depends(get_current_staff),
 ):
     try:
-        patient = create_patient(staff=patient_create, session=session)
+        patient = create_patient(patient=patient_create, session=session)
         return patient
     except IntegrityError:
         raise HTTPException(
@@ -110,10 +110,10 @@ def update(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    staff = update_patient(staff=patient_update, id=id, session=session)
-    if not staff:
+    patient = update_patient(patient=patient_update, id=id, session=session)
+    if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
-    return staff
+    return patient
 
 
 @router.delete("/{id}/", response_model=dict)

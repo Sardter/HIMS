@@ -66,16 +66,16 @@ def get_room_admissions(
         offset: int | None = None,
         limit: int | None = None) -> list[Admission] | None:
     
-    db_staff = session.get(Room, id)
-    if not db_staff:
+    db_room = session.get(Room, id)
+    if not db_room:
         return None
-    query = select(Admission).where(Admission.room_id == db_staff.id).offset(offset).limit(limit)
+    query = select(Admission).where(Admission.room_id == db_room.id).offset(offset).limit(limit)
 
     return session.exec(query).all()
 
 
-def create_room( *, staff: RoomCreate, session: SessionDep) -> Room | None:
-    db_staff = Room.model_validate(staff)
+def create_room( *, room: RoomCreate, session: SessionDep) -> Room | None:
+    db_staff = Room.model_validate(room)
     session.add(db_staff)
     session.commit()
     session.refresh(db_staff)
@@ -83,21 +83,21 @@ def create_room( *, staff: RoomCreate, session: SessionDep) -> Room | None:
 
 
 def update_room(*, id: int, staff: RoomUpdate, session: SessionDep) -> Room | None:
-    db_staff = session.get(Room, id)
-    if not db_staff:
+    db_room = session.get(Room, id)
+    if not db_room:
         return None
     staff_data = staff.model_dump(exclude_unset=True)
-    db_staff.sqlmodel_update(staff_data)
-    session.add(db_staff)
+    db_room.sqlmodel_update(staff_data)
+    session.add(db_room)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_room)
+    return db_room
 
 
 def delete_room(*, id: int, session: SessionDep) -> bool:
-    db_staff = session.get(Room, id)
-    if db_staff is None:
+    db_room = session.get(Room, id)
+    if db_room is None:
         return False
-    session.delete(db_staff)
+    session.delete(db_room)
     session.commit()
     return True

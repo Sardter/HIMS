@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
 from modules.auth.controllers.staff import get_current_staff
@@ -54,10 +53,10 @@ def retrieve_log(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    patient = get_log_by_id(session=session, id=id)
-    if not patient:
-        raise HTTPException(status_code=404, detail="Staff not found")
-    return patient
+    log = get_log_by_id(session=session, id=id)
+    if not log:
+        raise HTTPException(status_code=404, detail="Log not found")
+    return log
 
 
 @router.post("/", response_model=LogPublic)
@@ -66,13 +65,8 @@ def create_log(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    try:
-        patient = create_log(staff=patient_create, session=session)
-        return patient
-    except IntegrityError:
-        raise HTTPException(
-            status_code=400, detail="A patient with the provided details already exists"
-        )
+    log = create_log(staff=patient_create, session=session)
+    return log
 
 
 @router.delete("/{id}/", response_model=dict)
@@ -83,5 +77,5 @@ def delete(
 ):
     success = delete_log(id=id, session=session)
     if not success:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    return {"detail": "Patient deleted successfully"}
+        raise HTTPException(status_code=404, detail="Log not found")
+    return {"detail": "Log deleted successfully"}

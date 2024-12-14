@@ -60,12 +60,12 @@ def get_patient_by_id( *, session: SessionDep, id: int) -> Patient | None:
     return session.get(Patient, id)
 
 
-def create_patient( *, staff: PatientCreate, session: SessionDep) -> Patient | None:
-    db_staff = Patient.model_validate(staff)
-    session.add(db_staff)
+def create_patient( *, patient: PatientCreate, session: SessionDep) -> Patient | None:
+    db_patient = Patient.model_validate(patient)
+    session.add(db_patient)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_patient)
+    return db_patient
 
 
 def get_patient_admissions(
@@ -74,30 +74,30 @@ def get_patient_admissions(
         offset: int | None = None,
         limit: int | None = None) -> list[Admission] | None:
     
-    db_staff = session.get(Patient, id)
-    if not db_staff:
+    db_patient = session.get(Patient, id)
+    if not db_patient:
         return None
-    query = select(Admission).where(Admission.patient_id == db_staff.id).offset(offset).limit(limit)
+    query = select(Admission).where(Admission.patient_id == db_patient.id).offset(offset).limit(limit)
 
     return session.exec(query).all()
 
 
-def update_patient(*, id: int, staff: PatientUpdate, session: SessionDep) -> Patient | None:
-    db_staff = session.get(Patient, id)
-    if not db_staff:
+def update_patient(*, id: int, patient: PatientUpdate, session: SessionDep) -> Patient | None:
+    db_patient = session.get(Patient, id)
+    if not db_patient:
         return None
-    staff_data = staff.model_dump(exclude_unset=True)
-    db_staff.sqlmodel_update(staff_data)
-    session.add(db_staff)
+    staff_data = patient.model_dump(exclude_unset=True)
+    db_patient.sqlmodel_update(staff_data)
+    session.add(db_patient)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_patient)
+    return db_patient
 
 
 def delete_patient(*, id: int, session: SessionDep) -> bool:
-    db_staff = session.get(Patient, id)
-    if db_staff is None:
+    db_patient = session.get(Patient, id)
+    if db_patient is None:
         return False
-    session.delete(db_staff)
+    session.delete(db_patient)
     session.commit()
     return True

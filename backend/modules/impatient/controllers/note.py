@@ -53,30 +53,30 @@ def get_note_by_id( *, session: SessionDep, id: int) -> Note | None:
     return session.get(Note, id)
 
 
-def create_note( *, staff: NoteCreate, session: SessionDep) -> Note | None:
-    db_staff = Note.model_validate(staff)
-    session.add(db_staff)
+def create_note( *, note: NoteCreate, session: SessionDep) -> Note | None:
+    db_note = Note.model_validate(note)
+    session.add(db_note)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_note)
+    return db_note
 
 
-def update_note(*, id: int, staff: NoteUpdate, session: SessionDep) -> Note | None:
-    db_staff = session.get(Note, id)
-    if not db_staff:
+def update_note(*, id: int, note: NoteUpdate, session: SessionDep) -> Note | None:
+    db_note = session.get(Note, id)
+    if not db_note:
         return None
-    staff_data = staff.model_dump(exclude_unset=True)
-    db_staff.sqlmodel_update(staff_data)
-    session.add(db_staff)
+    note_data = note.model_dump(exclude_unset=True)
+    db_note.sqlmodel_update(note_data)
+    session.add(db_note)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_note)
+    return db_note
 
 
 def delete_note(*, id: int, session: SessionDep) -> bool:
-    db_staff = session.get(Note, id)
-    if db_staff is None:
+    db_note = session.get(Note, id)
+    if db_note is None:
         return False
-    session.delete(db_staff)
+    session.delete(db_note)
     session.commit()
     return True

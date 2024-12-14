@@ -51,18 +51,18 @@ def get_log_by_id(*, session: SessionDep, id: int) -> Log | None:
     return session.get(Log, id)
 
 
-def create_log( *, staff: LogCreate, session: SessionDep) -> Log | None:
-    db_staff = Log.model_validate(staff)
-    session.add(db_staff)
+def create_log( *, log: LogCreate, session: SessionDep) -> Log | None:
+    db_log = Log.model_validate(log)
+    session.add(db_log)
     session.commit()
-    session.refresh(db_staff)
-    return db_staff
+    session.refresh(db_log)
+    return db_log
 
 
 def delete_log(*, id: int, session: SessionDep) -> bool:
-    db_staff = session.get(Log, id)
-    if db_staff is None:
+    db_log = session.get(Log, id)
+    if db_log is None:
         return False
-    session.delete(db_staff)
+    session.delete(db_log)
     session.commit()
     return True
