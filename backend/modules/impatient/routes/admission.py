@@ -7,6 +7,9 @@ from modules.impatient.controllers.admission import get_admission_all, get_admis
 from modules.impatient.models.admission import AdmissionCreate, AdmissionUpdate, AdmissionPublic
 from modules.database.session import SessionDep
 from modules.impatient.models.note import NotePublic
+from modules.impatient.controllers.exceptions import RoomCapacityOverFlow, RoomDoesNotExist, PatientDoesNotExist, PatientAlreadyInRoom
+from modules.auth.controllers.log import log, LogType
+
 
 router = APIRouter()
 
@@ -85,8 +88,18 @@ def post_admission(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    admission = create_admission(admission=patient_create, session=session)
-    return admission
+    try:
+        admission = create_admission(admission=patient_create, session=session, staff_id=current_staff.id)
+        log(staff_id=current_staff.id, model=admission, path="post admission", log_type=LogType.Post, session=session)
+        return admission
+    except RoomDoesNotExist:
+        raise HTTPException(status_code=404, detail="Room Does not exist")
+    except RoomCapacityOverFlow:
+        raise HTTPException(status_code=400, detail="Not enough capacity in room")
+    except PatientAlreadyInRoom:
+        raise HTTPException(status_code=400, detail="Patient has been admitted to room already")
+    except PatientDoesNotExist:
+        raise HTTPException(status_code=404, detail="Patient Does not exist")
 
 
 @router.put("/{id}/", response_model=AdmissionPublic)
@@ -99,6 +112,7 @@ def update(
     admission = update_admission(admission=admission_update, id=id, session=session)
     if not admission:
         raise HTTPException(status_code=404, detail="Admission not found")
+    log(staff_id=current_staff.id, model=admission, path="update admission", log_type=LogType.Put, session=session)
     return admission
 
 
@@ -111,4 +125,6 @@ def delete(
     success = delete_admission(id=id, session=session)
     if not success:
         raise HTTPException(status_code=404, detail="Admission not found")
+    log(staff_id=current_staff.id, model=None, path="delete admission", log_type=LogType.Post, session=session)
+    
     return {"detail": "Admission deleted successfully"}

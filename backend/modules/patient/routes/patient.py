@@ -8,8 +8,9 @@ from modules.auth.models.staff import Staff
 from modules.patient.controllers.patient import get_patient_all, get_patient_by_id, create_patient, update_patient, delete_patient, get_patient_admissions
 from modules.patient.models.patient import PatientCreate, PatientUpdate, PatientPublic, PatientStatus
 from modules.database.session import SessionDep
-
+from modules.auth.controllers.log import log, LogType
 from modules.impatient.models.admission import AdmissionPublic
+
 
 router = APIRouter()
 
@@ -96,6 +97,7 @@ def register_patient(
 ):
     try:
         patient = create_patient(patient=patient_create, session=session)
+        log(staff_id=current_staff.id, path="post patient", model=patient, log_type=LogType.Post, session=session)
         return patient
     except IntegrityError:
         raise HTTPException(
@@ -113,6 +115,8 @@ def update(
     patient = update_patient(patient=patient_update, id=id, session=session)
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
+    
+    log(staff_id=current_staff.id, path="update patient", model=patient, log_type=LogType.Put, session=session)
     return patient
 
 
@@ -125,4 +129,6 @@ def delete(
     success = delete_patient(id=id, session=session)
     if not success:
         raise HTTPException(status_code=404, detail="Patient not found")
+    
+    log(staff_id=current_staff.id, path="delete patient", model=None, log_type=LogType.Delete, session=session)
     return {"detail": "Patient deleted successfully"}

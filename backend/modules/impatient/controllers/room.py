@@ -5,7 +5,6 @@ from modules.impatient.models.room import Room, RoomCreate, RoomUpdate
 from modules.database.session import SessionDep
 from modules.impatient.models.admission import Admission
 
-
 def get_room_all(
         *,
         session: SessionDep,

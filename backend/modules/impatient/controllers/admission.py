@@ -4,6 +4,11 @@ from datetime import datetime
 from modules.impatient.models.admission import Admission, AdmissionCreate, AdmissionUpdate
 from modules.database.session import SessionDep
 from modules.impatient.models.note import Note
+from modules.impatient.models.room import Room
+from modules.impatient.controllers.room import get_room_by_id
+from modules.patient.controllers.patient import get_patient_by_id, update_patient
+from modules.patient.models.patient import Patient, PatientStatus, PatientUpdate
+from modules.impatient.controllers.exceptions import RoomCapacityOverFlow, RoomDoesNotExist, PatientDoesNotExist, PatientAlreadyInRoom
 
 def get_admission_all(
         *,
@@ -53,8 +58,36 @@ def get_admission_by_id( *, session: SessionDep, id: int) -> Admission | None:
     return session.get(Admission, id)
 
 
-def create_admission( *, admission: AdmissionCreate, session: SessionDep) -> Admission | None:
-    db_admission = Admission.model_validate(admission)
+def create_admission( *, staff_id: int, admission: AdmissionCreate, session: SessionDep) -> Admission | None:
+    room = get_room_by_id(session=session, id=admission.room_id)
+    if room is None:
+        raise RoomDoesNotExist
+    patient = get_patient_by_id(session=session, id=admission.patient_id)
+    if patient is None:
+        raise PatientDoesNotExist
+    
+    patient_in_room_query = select(Patient, Admission, Room).where(
+        Patient.id == admission.patient_id, 
+        Room.id == room.id
+    )
+    
+    patient_is_in_room = session.exec(patient_in_room_query).all()
+    
+    if patient_is_in_room:
+        raise PatientAlreadyInRoom
+    
+    patient_count_query = select(Patient, Admission, Room).where(
+        Patient.id == Admission.patient_id, 
+        Room.id == room.id, 
+        Patient.status == PatientStatus.Admitted
+    )
+    patient_count = len(session.exec(patient_count_query).all())
+    if patient_count + 1 > room.maximum_capacity:
+        raise RoomCapacityOverFlow
+    
+    update_patient(id=patient.id, session=session, patient=PatientUpdate(status=PatientStatus.Admitted))
+    
+    db_admission = Admission.model_validate(admission, update={'staff_id': staff_id})
     session.add(db_admission)
     session.commit()
     session.refresh(db_admission)
@@ -91,6 +124,9 @@ def delete_admission(*, id: int, session: SessionDep) -> bool:
     db_admission = session.get(Admission, id)
     if db_admission is None:
         return False
+    
+    update_patient(id=db_admission.patient_id, session=session, patient=PatientUpdate(status=PatientStatus.Discharged))
+    
     session.delete(db_admission)
     session.commit()
     return True

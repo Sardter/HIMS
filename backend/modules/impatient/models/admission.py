@@ -5,11 +5,11 @@ from sqlmodel import Field, SQLModel, Column, TIMESTAMP, text
 class AdmissionBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     room_id: int = Field(foreign_key="room.id")
-    staff_id: int = Field(foreign_key="staff.id")
-
 
 class Admission(AdmissionBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    staff_id: int = Field(foreign_key="staff.id")
+    
     created_datetime: datetime = Field(sa_column=Column(
         TIMESTAMP(timezone=True),
         nullable=False,
@@ -33,6 +33,7 @@ class AdmissionCreate(AdmissionBase):
 
 class AdmissionPublic(AdmissionBase):
     id: int
+    staff_id: int
     created_datetime: datetime
     updated_datetime: datetime
 

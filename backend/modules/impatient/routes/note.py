@@ -6,6 +6,8 @@ from modules.auth.models.staff import Staff
 from modules.impatient.controllers.note import get_note_all, get_note_by_id, create_note, update_note, delete_note
 from modules.impatient.models.note import NoteCreate, NoteUpdate, NotePublic
 from modules.database.session import SessionDep
+from modules.auth.controllers.log import log, LogType
+
 
 router = APIRouter()
 
@@ -68,6 +70,7 @@ def post_note(
     current_staff: Staff = Depends(get_current_staff),
 ):
     note = create_note(note=patient_create, session=session, staff_id=current_staff.id)
+    log(staff_id=current_staff.id, path="post note", model=note, log_type=LogType.Post, session=session)
     return note
 
 
@@ -81,6 +84,8 @@ def update(
     note = update_note(note=note_update, id=id, session=session)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
+    log(staff_id=current_staff.id, path="update note", model=note, log_type=LogType.Put, session=session)
+    
     return note
 
 
@@ -93,4 +98,6 @@ def delete(
     success = delete_note(id=id, session=session)
     if not success:
         raise HTTPException(status_code=404, detail="Note not found")
+    log(staff_id=current_staff.id, path="delete note", model=None, log_type=LogType.Delete, session=session)
+    
     return {"detail": "Note deleted successfully"}

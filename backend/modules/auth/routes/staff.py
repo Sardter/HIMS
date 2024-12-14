@@ -12,6 +12,8 @@ from modules.database.session import SessionDep
 from modules.impatient.models.admission import AdmissionPublic
 from modules.impatient.models.note import NotePublic
 from modules.auth.models.log import LogPublic
+from modules.auth.controllers.log import log, LogType
+
 
 router = APIRouter()
 
@@ -137,6 +139,8 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
         )
+    log(staff_id=staff.id, model=staff, path="login", session=session)
+    
     response = JSONResponse(content={"detail": "Login successful", "access_token": str(staff.id)})
     response.set_cookie(key="access_token", value=staff.id, httponly=True)
     return response
@@ -149,6 +153,8 @@ def register(
 ):
     try:
         staff = register_staff(staff=staff_create, session=session)
+        log(staff_id=staff.id, model=staff, path="register", log_type=LogType.Post, session=session)
+        
         return staff
     except IntegrityError:
         raise HTTPException(
@@ -165,6 +171,8 @@ def update(
     staff = update_staff(staff=staff_update, id=current_staff.id, session=session)
     if not staff:
         raise HTTPException(status_code=404, detail="Staff not found")
+    log(staff_id=staff.id, model=staff, path="update staff", log_type=LogType.Put, session=session)
+    
     return staff
 
 
@@ -176,4 +184,6 @@ def delete(
     success = delete_staff(id=current_staff.id, session=session)
     if not success:
         raise HTTPException(status_code=404, detail="Staff not found")
+    log(staff_id=current_staff.id, model=current_staff, path="delete staff", log_type=LogType.Delete, session=session)
+    
     return {"detail": "Staff deleted successfully"}

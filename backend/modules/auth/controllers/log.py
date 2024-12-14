@@ -1,5 +1,6 @@
-from sqlmodel import select
+from sqlmodel import SQLModel, select
 from datetime import datetime
+from enum import Enum
 
 from modules.auth.models.log import Log, LogCreate
 from modules.database.session import SessionDep
@@ -66,3 +67,26 @@ def delete_log(*, id: int, session: SessionDep) -> bool:
     session.delete(db_log)
     session.commit()
     return True
+
+
+class LogType(Enum):
+    Post = "Post"
+    Get = "Get"
+    Put = "Put"
+    Delete = "Delete"
+
+
+def log(*, staff_id: int, path: str, model: SQLModel | None, log_type: LogType = LogType.Get, session: SessionDep) -> Log | None:
+    return create_log(
+        session=session,
+        staff_id=staff_id,
+        log=LogCreate(
+            text=f"""
+            Staff ID: {staff_id}\n
+            Log Type: {log_type}\n
+            Path: {path}\n
+            Content:\n
+            {model.model_dump() if model is not None else 'None'}
+            """
+        )
+    )

@@ -8,6 +8,8 @@ from modules.impatient.controllers.room import get_room_all, get_room_by_id, cre
 from modules.impatient.models.room import RoomCreate, RoomUpdate, RoomPublic
 from modules.database.session import SessionDep
 from modules.impatient.models.admission import AdmissionPublic
+from modules.auth.controllers.log import log, LogType
+
 
 router = APIRouter()
 
@@ -94,6 +96,7 @@ def register_room(
 ):
     try:
         room = create_room(room=patient_create, session=session)
+        log(staff_id=current_staff.id, path="post room", model=room, log_type=LogType.Post, session=session)
         return room
     except IntegrityError:
         raise HTTPException(
@@ -111,6 +114,7 @@ def update(
     room = update_room(staff=room_update, id=id, session=session)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
+    log(staff_id=current_staff.id, path="update room", model=room, log_type=LogType.Put, session=session)
     return room
 
 
@@ -123,4 +127,5 @@ def delete(
     success = delete_room(id=id, session=session)
     if not success:
         raise HTTPException(status_code=404, detail="Room not found")
+    log(staff_id=current_staff.id, path="post room", model=None, log_type=LogType.Delete, session=session)
     return {"detail": "Room deleted successfully"}
