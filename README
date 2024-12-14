@@ -1,4 +1,3 @@
-```markdown
 # Project Setup and Launch Instructions
 
 This guide walks you through setting up a Python virtual environment, installing all the required global dependencies, and running both the FastAPI backend and the Streamlit frontend from their respective directories. All dependencies are managed by a single `requirements.txt` file located at the project root.
@@ -117,4 +116,3 @@ This single environment now contains all the necessary packages to run both the 
 ## Conclusion
 
 By following these steps, you’ll have a running FastAPI backend on `http://localhost:8000` and a Streamlit frontend on `http://localhost:8501`. Remember to keep both servers running in separate terminals with the same virtual environment activated for smooth operation.
-```
