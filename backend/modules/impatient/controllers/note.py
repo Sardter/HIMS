@@ -53,8 +53,8 @@ def get_note_by_id( *, session: SessionDep, id: int) -> Note | None:
     return session.get(Note, id)
 
 
-def create_note( *, note: NoteCreate, session: SessionDep) -> Note | None:
-    db_note = Note.model_validate(note)
+def create_note( *, staff_id: int, note: NoteCreate, session: SessionDep) -> Note | None:
+    db_note = Note.model_validate(note, update={'staff_id': staff_id})
     session.add(db_note)
     session.commit()
     session.refresh(db_note)

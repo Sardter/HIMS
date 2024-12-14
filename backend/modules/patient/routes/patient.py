@@ -1,4 +1,4 @@
-from typing import Annotated
+from enum import Enum
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime

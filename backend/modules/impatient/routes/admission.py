@@ -80,12 +80,12 @@ def retrieve_admission(
 
 
 @router.post("/", response_model=AdmissionPublic)
-def create_admission(
+def post_admission(
     patient_create: AdmissionCreate,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    admission = create_admission(staff=patient_create, session=session)
+    admission = create_admission(admission=patient_create, session=session)
     return admission
 
 

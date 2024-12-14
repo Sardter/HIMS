@@ -60,12 +60,12 @@ def retrieve_log(
 
 
 @router.post("/", response_model=LogPublic)
-def create_log(
-    patient_create: LogCreate,
+def post_log(
+    log_create: LogCreate,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    log = create_log(staff=patient_create, session=session)
+    log = create_log(log=log_create, session=session, staff_id=current_staff.id)
     return log
 
 

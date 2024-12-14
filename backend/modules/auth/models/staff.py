@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlmodel import Field, SQLModel, Column, TIMESTAMP, text
 
 
@@ -17,13 +17,17 @@ class Staff(StaffBase, table=True):
         TIMESTAMP(timezone=True),
         nullable=False,
         server_default=text("CURRENT_TIMESTAMP"),
-    ))
-    updated_datetime: datetime = Field(sa_column=Column(
+    ),
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+    updated_datetime: datetime | None = Field(sa_column=Column(
         TIMESTAMP(timezone=True),
         nullable=False,
         server_default=text("CURRENT_TIMESTAMP"),
         server_onupdate=text("CURRENT_TIMESTAMP"),
-    ))
+    ),
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     
 
 class StaffCreate(StaffBase):

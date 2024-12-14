@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
 from modules.auth.controllers.staff import get_current_staff
 from modules.auth.models.staff import Staff
 from modules.impatient.controllers.note import get_note_all, get_note_by_id, create_note, update_note, delete_note
-from modules.impatient.models.note import Note, NoteCreate, NoteUpdate, NotePublic
+from modules.impatient.models.note import NoteCreate, NoteUpdate, NotePublic
 from modules.database.session import SessionDep
 
 router = APIRouter()
@@ -51,7 +50,7 @@ def list_notes(
 
 
 @router.get("/{id}/", response_model=NotePublic)
-def retrieve_room(
+def retrieve_note(
     id: int,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
@@ -63,12 +62,12 @@ def retrieve_room(
 
 
 @router.post("/", response_model=NotePublic)
-def register_room(
+def post_note(
     patient_create: NoteCreate,
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    note = create_note(note=patient_create, session=session)
+    note = create_note(note=patient_create, session=session, staff_id=current_staff.id)
     return note
 
 

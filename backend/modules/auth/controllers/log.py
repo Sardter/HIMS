@@ -51,8 +51,8 @@ def get_log_by_id(*, session: SessionDep, id: int) -> Log | None:
     return session.get(Log, id)
 
 
-def create_log( *, log: LogCreate, session: SessionDep) -> Log | None:
-    db_log = Log.model_validate(log)
+def create_log( *, staff_id: int, log: LogCreate, session: SessionDep) -> Log | None:
+    db_log = Log.model_validate(log, update={'staff_id': staff_id})
     session.add(db_log)
     session.commit()
     session.refresh(db_log)
