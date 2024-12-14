@@ -25,10 +25,10 @@ def get_staff_all(
     query = select(Staff).offset(offset).limit(limit)
     filters = [
         Staff.first_name.ilike(f"%{first_name}%") if first_name is not None else None,
-        Staff.last_name.ilike(f"%{first_name}%") if last_name is not None else None,
-        Staff.email.ilike(f"%{first_name}%") if email is not None else None,
-        Staff.username.ilike(f"%{first_name}%") if username is not None else None,
-        Staff.phone.ilike(f"%{first_name}%") if phone is not None else None,
+        Staff.last_name.ilike(f"%{last_name}%") if last_name is not None else None,
+        Staff.email.ilike(f"%{email}%") if email is not None else None,
+        Staff.username.ilike(f"%{username}%") if username is not None else None,
+        Staff.phone.ilike(f"%{phone}%") if phone is not None else None,
     ]
     
     filters = [filter for filter in filters if filter is not None]

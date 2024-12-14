@@ -4,6 +4,7 @@ class NoteBase(SQLModel):
     text: str = Field()
     
     admission_id: int = Field(foreign_key="admission.id")
+    staff_id: int = Field(foreign_key="staff.id")
 
 
 class Note(NoteBase, table=True):

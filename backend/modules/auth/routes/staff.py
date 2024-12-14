@@ -48,7 +48,7 @@ def retrieve_staff(
 
 
 @router.get("/me/", response_model=StaffPublic)
-def retrieve_staff(
+def retrieve_me(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
@@ -84,7 +84,7 @@ def register(
         )
 
 
-@router.put("/{id}/", response_model=StaffPublic)
+@router.put("/", response_model=StaffPublic)
 def update(
     staff_update: StaffUpdate,
     session: SessionDep,
@@ -96,7 +96,7 @@ def update(
     return staff
 
 
-@router.delete("/{id}/", response_model=dict)
+@router.delete("/", response_model=dict)
 def delete(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),

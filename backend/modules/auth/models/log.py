@@ -16,7 +16,3 @@ class LogCreate(LogBase):
 
 class LogPublic(LogBase):
     id: int
-
-
-class LogUpdate(SQLModel):
-    staff_id: int | None = None
