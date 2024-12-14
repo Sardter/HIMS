@@ -1,4 +1,5 @@
-from sqlmodel import Field, SQLModel
+import datetime
+from sqlmodel import Field, SQLModel, Column, TIMESTAMP, text
 
 
 class StaffBase(SQLModel):
@@ -12,6 +13,17 @@ class StaffBase(SQLModel):
 class Staff(StaffBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     hashed_password: str = Field()
+    created_datetime: datetime = Field(sa_column=Column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=text("CURRENT_TIMESTAMP"),
+    ))
+    updated_datetime: datetime = Field(sa_column=Column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=text("CURRENT_TIMESTAMP"),
+        server_onupdate=text("CURRENT_TIMESTAMP"),
+    ))
     
 
 class StaffCreate(StaffBase):
@@ -20,6 +32,8 @@ class StaffCreate(StaffBase):
 
 class StaffPublic(StaffBase):
     id: int
+    created_datetime: datetime
+    updated_datetime: datetime
 
 
 class StaffUpdate(SQLModel):
