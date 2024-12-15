@@ -24,7 +24,7 @@ class Log(LogBase, table=True):
     ),
         default_factory=lambda: datetime.now(timezone.utc)
     )
-    
+
 
 class LogCreate(LogBase):
     ...

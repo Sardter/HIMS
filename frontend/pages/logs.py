@@ -23,12 +23,6 @@ def logs_view():
         offset = st.number_input("Offset", min_value=0, value=0)
         limit = st.number_input("Limit", min_value=1, value=10)
 
-    # Optional exact created date filter
-    #created_date = st.date_input("Created Date (optional)")
-    #created_datetime = None
-    #if created_date:
-    #    created_datetime = datetime.combine(created_date, time(0, 0))
-
     # Build query parameters
     query_params = {
         "offset": offset,
@@ -39,8 +33,6 @@ def logs_view():
         query_params["text"] = text_filter.strip()
     if staff_id_filter > 0:
         query_params["staff_id"] = staff_id_filter
-    #if created_datetime:
-    #    query_params["created_datetime"] = created_datetime
 
     search_button = st.button("Search Logs")
 
@@ -82,6 +74,24 @@ def logs_view():
                         st.success(f"Log created successfully! ID: {response.get('id')}")
                     except Exception as e:
                         st.error(f"Error creating log entry: {e}")
+
+    st.write("---")
+
+    # --- Delete Log Entry Section ---
+    st.write("### Delete a Log Entry")
+    delete_log_id = st.number_input("Enter Log ID to Delete", min_value=1)
+    delete_button = st.button("Delete Log")
+
+    if delete_button:
+        with st.spinner("Deleting log entry..."):
+            try:
+                response = client.delete_log(log_id=delete_log_id)
+                if response:
+                    st.success(f"Log with ID {delete_log_id} deleted successfully!")
+                else:
+                    st.error(f"Log with ID {delete_log_id} not found.")
+            except Exception as e:
+                st.error(f"Error deleting log entry: {e}")
 
 def main():
     logs_view()
