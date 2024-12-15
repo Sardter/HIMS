@@ -177,6 +177,7 @@ class BackendClient:
         email: Optional[str] = None,
         status: Optional[PatientStatus] = None,
         phone: Optional[str] = None,
+        gender: Optional[str] = None,  # Add gender as a parameter
         created_datetime: Optional[datetime] = None,
         created_datetime__gt: Optional[datetime] = None,
         created_datetime__lt: Optional[datetime] = None,
@@ -197,9 +198,10 @@ class BackendClient:
             "email": email,
             "status": status.value if status else None,
             "phone": phone,
+            "gender": gender,  # Include gender in the query parameters
             "offset": offset,
             "limit": limit,
-            "created_datetime": created_datetime.isoformat() if created_datetime else None,
+        "created_datetime": created_datetime.isoformat() if created_datetime else None,
             "created_datetime__gt": created_datetime__gt.isoformat() if created_datetime__gt else None,
             "created_datetime__lt": created_datetime__lt.isoformat() if created_datetime__lt else None,
             "created_datetime__gte": created_datetime__gte.isoformat() if created_datetime__gte else None,
@@ -210,6 +212,7 @@ class BackendClient:
             "updated_datetime__gte": updated_datetime__gte.isoformat() if updated_datetime__gte else None,
             "updated_datetime__lte": updated_datetime__lte.isoformat() if updated_datetime__lte else None,
         }
+        # Remove keys with None values
         params = {k: v for k, v in params.items() if v is not None}
         return self._get("/patient/", params=params)
 
