@@ -44,6 +44,28 @@ def rooms_view():
                 st.info("No rooms found for the given filters.")
 
     st.write("---")
+    st.write("### Create a New Room")
+    
+    # Create room by entering details
+    with st.form("create_room_form"):
+        room_name = st.text_input("Room Name")
+        room_capacity = st.number_input("Maximum Capacity", min_value=1)
+        submitted_create = st.form_submit_button("Create Room")
+        
+        if submitted_create and room_name and room_capacity:
+            with st.spinner("Creating room..."):
+                room_data = {
+                    "name": room_name,
+                    "maximum_capacity": room_capacity
+                }
+                
+                try:
+                    response = client.create_room(room_data)  # Assuming this function is available in BackendClient
+                    st.success(f"Room '{room_name}' created successfully!")
+                except Exception as e:
+                    st.error(f"Error creating room: {e}")
+
+    st.write("---")
     st.write("### Update an Existing Room")
     
     # Update room by entering room ID and new values
