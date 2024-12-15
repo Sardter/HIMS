@@ -4,6 +4,8 @@ from datetime import datetime
 from modules.patient.models.patient import Patient, PatientCreate, PatientUpdate, PatientStatus
 from modules.database.session import SessionDep
 from modules.impatient.models.admission import Admission
+import requests
+
 
 
 def get_patient_all(
@@ -94,10 +96,12 @@ def update_patient(*, id: int, patient: PatientUpdate, session: SessionDep) -> P
     return db_patient
 
 
-def delete_patient(*, id: int, session: SessionDep) -> bool:
-    db_patient = session.get(Patient, id)
-    if db_patient is None:
-        return False
+def delete_patient(*, patient_id: int, session: SessionDep) -> bool:
+    """Delete a patient record using session."""
+    db_patient = session.get(Patient, patient_id)
+    if not db_patient:
+        return False  # Patient not found, cannot delete
+
     session.delete(db_patient)
     session.commit()
-    return True
+    return True  # Successfully deleted the patient

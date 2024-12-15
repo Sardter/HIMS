@@ -112,12 +112,14 @@ def update(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    patient = update_patient(patient=patient_update, id=id, session=session)
-    if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
-    
-    log(staff_id=current_staff.id, path="update patient", model=patient, log_type=LogType.Put, session=session)
-    return patient
+    try:
+        patient = update_patient(patient=patient_update, id=id, session=session)
+        if not patient:
+            raise HTTPException(status_code=404, detail="Patient not found")
+        log(staff_id=current_staff.id, path="update patient", model=patient, log_type=LogType.Put, session=session)
+        return patient
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Error updating patient: {str(e)}")
 
 
 @router.delete("/{id}/", response_model=dict)
@@ -126,7 +128,7 @@ def delete(
     session: SessionDep,
     current_staff: Staff = Depends(get_current_staff),
 ):
-    success = delete_patient(id=id, session=session)
+    success = delete_patient(patient_id=id, session=session)
     if not success:
         raise HTTPException(status_code=404, detail="Patient not found")
     
