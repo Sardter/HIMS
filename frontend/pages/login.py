@@ -4,12 +4,10 @@ from utils import BackendClient
 def login_view():
     st.title("Login")
 
-    # If already logged in, show a message
     if "authenticated" in st.session_state and st.session_state["authenticated"]:
         st.success("You are already logged in.")
         return
 
-    # Create a login form
     with st.form("login_form"):
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")

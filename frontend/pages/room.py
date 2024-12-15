@@ -4,12 +4,10 @@ from utils import BackendClient
 def rooms_view():
     st.title("Rooms Management")
 
-    # We will retrieve the backend client from session state
     client: BackendClient = st.session_state["client"]
 
     st.write("Use the filters below to search for rooms.")
-    
-    # Create filtering options for searching rooms (if needed)
+
     name_filter = st.text_input("Room Name (contains)")
     max_capacity_eq = st.number_input("Exact Capacity", min_value=0, value=0)
     max_capacity_gte = st.number_input("Capacity ≥", min_value=0, value=0)

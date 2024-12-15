@@ -4,7 +4,6 @@ from utils import BackendClient
 def admissions_view():
     st.title("Admissions Management")
 
-    # Ensure client is in session
     if "client" not in st.session_state:
         st.error("No backend client found in session. Please go to the main page.")
         return
@@ -21,11 +20,9 @@ def admissions_view():
     with col3:
         staff_id_filter = st.number_input("Staff ID (optional)", min_value=0, value=0)
     with col4:
-        # Pagination
         offset = st.number_input("Offset", min_value=0, value=0)
         limit = st.number_input("Limit", min_value=1, value=10)
 
-    # Build query parameters
     query_params = {
         "offset": offset,
         "limit": limit,
@@ -44,7 +41,6 @@ def admissions_view():
             try:
                 admissions_data = client.list_admissions(**query_params)
                 st.success("Admissions fetched successfully!")
-                # Check if response contains 'results' (for pagination)
                 results = admissions_data
                 if results:
                     st.table(results)
@@ -56,7 +52,6 @@ def admissions_view():
     st.write("---")
     st.write("### Create a New Admission")
 
-    # A form to create a new admission
     with st.form("create_admission_form"):
         new_patient_id = st.number_input("Patient ID", min_value=1, value=1)
         new_room_id = st.number_input("Room ID", min_value=1, value=1)
@@ -64,7 +59,6 @@ def admissions_view():
         submitted_create = st.form_submit_button("Create Admission")
 
         if submitted_create:
-            # Basic validation: ensure IDs are provided
             if new_patient_id <= 0 or new_room_id <= 0 or new_staff_id <= 0:
                 st.warning("Please provide valid Patient ID, Room ID, and Staff ID.")
             else:
@@ -76,12 +70,10 @@ def admissions_view():
 
                 with st.spinner("Creating new admission..."):
                     try:
-                        # Send the request to create an admission
                         print(admission_data)
                         response = client.create_admission(admission_data=admission_data)
                         st.success(f"Admission created successfully! ID: {response.get('id')}")
                     except Exception as e:
-                        # Handle specific error messages
                         if "Room Does not exist" in str(e):
                             st.error("Room does not exist.")
                         elif "Not enough capacity in room" in str(e):
@@ -96,7 +88,6 @@ def admissions_view():
     st.write("---")
     st.write("### Update an Admission")
 
-    # Form to update an admission
     with st.form("update_admission_form"):
         admission_id = st.number_input("Admission ID", min_value=1, value=1)
         update_patient_id = st.number_input("Patient ID", min_value=1, value=1)
@@ -105,7 +96,6 @@ def admissions_view():
         submitted_update = st.form_submit_button("Update Admission")
 
         if submitted_update:
-            # Ensure IDs are valid before updating
             if update_patient_id <= 0 or update_room_id <= 0 or update_staff_id <= 0:
                 st.warning("Please provide valid Patient ID, Room ID, and Staff ID.")
             else:
@@ -117,7 +107,6 @@ def admissions_view():
 
                 with st.spinner("Updating admission..."):
                     try:
-                        # Send the request to update an admission
                         response = client.update_admission(admission_id, admission_update_data)
                         st.success(f"Admission updated successfully! ID: {response.get('id')}")
                     except Exception as e:
@@ -126,7 +115,6 @@ def admissions_view():
     st.write("---")
     st.write("### Delete an Admission")
 
-    # Form to delete an admission
     with st.form("delete_admission_form"):
         delete_admission_id = st.number_input("Admission ID to delete", min_value=1, value=1)
         submitted_delete = st.form_submit_button("Delete Admission")
@@ -134,7 +122,6 @@ def admissions_view():
         if submitted_delete:
             with st.spinner("Deleting admission..."):
                 try:
-                    # Send the request to delete an admission
                     response = client.delete_admission(delete_admission_id)
                     st.success(f"Admission deleted successfully! ID: {delete_admission_id}")
                 except Exception as e:

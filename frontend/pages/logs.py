@@ -5,7 +5,6 @@ from datetime import datetime, time
 def logs_view():
     st.title("Logs Management")
 
-    # Ensure client is in session
     if "client" not in st.session_state:
         st.error("No backend client found in session. Please go back to the main page.")
         return
@@ -23,7 +22,6 @@ def logs_view():
         offset = st.number_input("Offset", min_value=0, value=0)
         limit = st.number_input("Limit", min_value=1, value=10)
 
-    # Build query parameters
     query_params = {
         "offset": offset,
         "limit": limit
@@ -52,7 +50,6 @@ def logs_view():
     st.write("---")
     st.write("### Create a New Log Entry")
 
-    # A form to create a new log entry
     with st.form("create_log_form"):
         new_text = st.text_area("Log Text", "")
         new_staff_id = st.number_input("Staff ID", min_value=1, value=1)
@@ -60,7 +57,6 @@ def logs_view():
         submitted = st.form_submit_button("Create Log")
 
         if submitted:
-            # Basic validation
             if not new_text.strip():
                 st.warning("Please provide log text.")
             else:
@@ -76,8 +72,6 @@ def logs_view():
                         st.error(f"Error creating log entry: {e}")
 
     st.write("---")
-
-    # --- Delete Log Entry Section ---
     st.write("### Delete a Log Entry")
     delete_log_id = st.number_input("Enter Log ID to Delete", min_value=1)
     delete_button = st.button("Delete Log")

@@ -4,11 +4,9 @@ from utils import BackendClient
 def register_view():
     st.title("Register New Staff")
 
-    # If already logged in, show a message and possibly restrict registration
     if "authenticated" in st.session_state and st.session_state["authenticated"]:
         st.info("You are logged in. You can register another staff member if you have the appropriate permissions.")
-    
-    # The fields below depend on your backend staff model
+
     with st.form("register_form"):
         first_name = st.text_input("First Name")
         last_name = st.text_input("Last Name")

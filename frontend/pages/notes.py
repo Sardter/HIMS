@@ -5,7 +5,6 @@ from datetime import datetime, time
 def notes_view():
     st.title("Notes Management")
 
-    # Ensure client is in session
     if "client" not in st.session_state:
         st.error("No backend client found in session. Please go to the main page.")
         return
@@ -25,7 +24,6 @@ def notes_view():
         offset = st.number_input("Offset", min_value=0, value=0)
         limit = st.number_input("Limit", min_value=1, value=10)
 
-    # Build query parameters
     query_params = {
         "offset": offset,
         "limit": limit
@@ -55,7 +53,6 @@ def notes_view():
 
     st.write("---")
 
-    # --- Create Note Section ---
     st.write("### Create a New Note")
     with st.form("create_note_form"):
         new_text = st.text_area("Note Text", "")
@@ -65,7 +62,6 @@ def notes_view():
         submitted = st.form_submit_button("Create Note")
 
         if submitted:
-            # Basic validation
             if not new_text.strip():
                 st.warning("Please provide note text.")
             else:
@@ -83,7 +79,6 @@ def notes_view():
 
     st.write("---")
 
-    # --- Delete Note Section ---
     st.write("### Delete a Note")
     delete_note_id = st.number_input("Enter Note ID to Delete", min_value=1)
     delete_button = st.button("Delete Note")
@@ -101,7 +96,6 @@ def notes_view():
 
     st.write("---")
 
-    # --- Update Note Section (Direct Update) ---
     st.write("### Update a Note")
     update_note_id = st.number_input("Enter Note ID to Update", min_value=1)
     
